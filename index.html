@@ -6,29 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>马克待办</title>
   <style>
-    :root {
-      color-scheme: dark;
-    }
-
     body {
       max-width: 900px;
       margin: 60px auto;
       padding: 0 20px;
-      background: #121212;
-      color: #e6e6e6;
+      background: #f7f7f7;
+      color: #222;
     }
 
     .app {
-      background: #1e1e1e;
+      background: white;
       padding: 28px;
       border-radius: 12px;
-      border: 1px solid #2c2c2c;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     }
 
     h1 {
       margin-top: 0;
-      color: #f2f2f2;
     }
 
     .input-row {
@@ -37,56 +31,20 @@
       margin-bottom: 24px;
     }
 
-    input[type="text"],
-    input[type="date"] {
-      padding: 10px 12px;
-      font-size: 16px;
-      background: #2a2a2a;
-      border: 1px solid #3a3a3a;
-      border-radius: 6px;
-      color: #e6e6e6;
-      outline: none;
-    }
-
     input[type="text"] {
       flex: 1;
-    }
-
-    input[type="text"]:focus,
-    input[type="date"]:focus {
-      border-color: #4d9fff;
-    }
-
-    input::placeholder {
-      color: #7a7a7a;
+      padding: 10px 12px;
+      font-size: 16px;
     }
 
     button {
       padding: 10px 16px;
-      font-size: 14px;
       cursor: pointer;
-      background: #2f2f2f;
-      border: 1px solid #444;
-      border-radius: 6px;
-      color: #e6e6e6;
-      transition: background 0.15s, border-color 0.15s;
-    }
-
-    button:hover:not(:disabled) {
-      background: #3a3a3a;
-      border-color: #555;
     }
 
     button:disabled {
       opacity: 0.5;
       cursor: default;
-    }
-
-    input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: #4d9fff;
-      cursor: pointer;
     }
 
     ul {
@@ -100,7 +58,7 @@
       align-items: center;
       gap: 10px;
       padding: 12px 0;
-      border-bottom: 1px solid #2e2e2e;
+      border-bottom: 1px solid #eee;
     }
 
     li span {
@@ -109,25 +67,26 @@
 
     li.completed span {
       text-decoration: line-through;
-      color: #6f6f6f;
+      color: #999;
     }
 
     li.completed .due {
       text-decoration: none;
     }
 
+    input[type="date"] {
+      padding: 10px 12px;
+      font-size: 16px;
+    }
+
     li .due {
       flex: none;
       font-size: 14px;
-      color: #9a9a9a;
+      color: #888;
     }
 
     li .due.overdue {
-      color: #ff6b6b;
-    }
-
-    #stats {
-      color: #9a9a9a;
+      color: #d92c2c;
     }
   </style>
 </head>
