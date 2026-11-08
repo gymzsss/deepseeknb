@@ -133,7 +133,7 @@
     <div class="toolbar">
       <button id="sortButton">排序</button>
       <button id="completeAllButton">全部完成</button>
-      <button id="clearCompletedButton">清空已完成</button>
+      <button id="clearAllButton">清空</button>
       <button id="exportButton">导出</button>
     </div>
 
@@ -151,7 +151,7 @@
 
     const dueInput = document.getElementById("dueInput");
     const completeAllButton = document.getElementById("completeAllButton");
-    const clearCompletedButton = document.getElementById("clearCompletedButton");
+    const clearAllButton = document.getElementById("clearAllButton");
     const exportButton = document.getElementById("exportButton");
     const overdueNotice = document.getElementById("overdueNotice");
 
@@ -194,12 +194,12 @@
       return todo.due < today;
     }
 
-    function clearCompleted() {
-      const remaining = todos.filter(todo => !todo.completed);
+    function clearAll() {
+      if (!confirm("确定要清空全部待办吗？")) {
+        return;
+      }
 
       todos.length = 0;
-      todos.push(...remaining);
-
       renderTodos();
     }
 
@@ -328,7 +328,7 @@
     sortButton.addEventListener("click", sortByDue);
 
     completeAllButton.addEventListener("click", completeAll);
-    clearCompletedButton.addEventListener("click", clearCompleted);
+    clearAllButton.addEventListener("click", clearAll);
     exportButton.addEventListener("click", exportTodos);
     todoInput.addEventListener("keydown", event => {
       if (event.key === "Enter") {
