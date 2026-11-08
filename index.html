@@ -28,6 +28,12 @@
     .input-row {
       display: flex;
       gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
       margin-bottom: 24px;
     }
 
@@ -38,7 +44,9 @@
     }
 
     button {
+      flex: none;
       padding: 10px 16px;
+      white-space: nowrap;
       cursor: pointer;
     }
 
@@ -88,6 +96,27 @@
     li .due.overdue {
       color: #d92c2c;
     }
+
+    .due-label {
+      flex: none;
+      align-self: center;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .overdue-notice {
+      margin: 0 0 16px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #c0392b;
+      background: #fdf0f0;
+      border: 1px solid #f2c6c6;
+      border-radius: 8px;
+    }
+
+    #stats.overdue {
+      color: #c0392b;
+    }
   </style>
 </head>
 <body>
@@ -96,14 +125,19 @@
 
     <div class="input-row">
       <input id="todoInput" type="text" placeholder="输入一个待办事项">
+      <span class="due-label">截止日期</span>
       <input id="dueInput" type="date">
       <button id="addButton">添加</button>
+    </div>
+
+    <div class="toolbar">
       <button id="sortButton">排序</button>
       <button id="completeAllButton">全部完成</button>
-      <button id="clearCompletedButton">清空已完成</button>
+      <button id="clearAllButton">清空</button>
       <button id="exportButton">导出</button>
     </div>
 
+    <p id="overdueNotice" class="overdue-notice" hidden></p>
     <ul id="todoList"></ul>
     <p id="stats"></p>
   </div>
@@ -117,13 +151,39 @@
 
     const dueInput = document.getElementById("dueInput");
     const completeAllButton = document.getElementById("completeAllButton");
-    const clearCompletedButton = document.getElementById("clearCompletedButton");
+    const clearAllButton = document.getElementById("clearAllButton");
     const exportButton = document.getElementById("exportButton");
+    const overdueNotice = document.getElementById("overdueNotice");
 
-    const todos = [
-      { text: "关注「马克的技术工作坊」", completed: false },
-      { text: "给这期 Git 教程点赞", completed: true }
-    ];
+    const STORAGE_KEY = "mark-todos-v1";
+
+    function loadTodos() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+
+        if (!raw) {
+          return [
+            { text: "关注「马克的技术工作坊」", completed: false },
+            { text: "给这期 Git 教程点赞", completed: true }
+          ];
+        }
+
+        const saved = JSON.parse(raw);
+        return Array.isArray(saved) ? saved : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveTodos() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+      } catch (error) {
+        // 存储不可用（隐私模式/已满）时静默忽略
+      }
+    }
+
+    const todos = loadTodos();
 
     function isOverdue(todo) {
       if (!todo.due || todo.completed) {
@@ -134,12 +194,12 @@
       return todo.due < today;
     }
 
-    function clearCompleted() {
-      const remaining = todos.filter(todo => !todo.completed);
+    function clearAll() {
+      if (!confirm("确定要清空全部待办吗？")) {
+        return;
+      }
 
       todos.length = 0;
-      todos.push(...remaining);
-
       renderTodos();
     }
 
@@ -186,10 +246,10 @@
 
         const due = document.createElement("span");
         due.className = "due";
-        due.textContent = todo.due ? todo.due : "";
+        due.textContent = todo.due ? `截止 ${todo.due}` : "";
         if (isOverdue(todo)) {
           due.classList.add("overdue");
-          due.textContent = todo.due + " 已过期";
+          due.textContent = `截止 ${todo.due}（已过期）`;
         }
 
         const deleteButton = document.createElement("button");
@@ -209,7 +269,20 @@
       });
 
       const left = todos.filter(todo => !todo.completed).length;
+      const overdueCount = todos.filter(isOverdue).length;
+
       stats.textContent = `共 ${todos.length} 项，还剩 ${left} 项没完成`;
+      stats.classList.toggle("overdue", overdueCount > 0);
+
+      if (overdueCount > 0) {
+        overdueNotice.hidden = false;
+        overdueNotice.textContent = `⚠ 有 ${overdueCount} 项已过期，请尽快处理`;
+      } else {
+        overdueNotice.hidden = true;
+        overdueNotice.textContent = "";
+      }
+
+      saveTodos();
     }
 
     let sortAsc = true;
@@ -255,7 +328,7 @@
     sortButton.addEventListener("click", sortByDue);
 
     completeAllButton.addEventListener("click", completeAll);
-    clearCompletedButton.addEventListener("click", clearCompleted);
+    clearAllButton.addEventListener("click", clearAll);
     exportButton.addEventListener("click", exportTodos);
     todoInput.addEventListener("keydown", event => {
       if (event.key === "Enter") {
