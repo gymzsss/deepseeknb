@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2e7d32">
   <title>马克待办</title>
   <style>
     body {
@@ -48,6 +49,16 @@
       padding: 10px 16px;
       white-space: nowrap;
       cursor: pointer;
+      color: #fff;
+      background: #2e7d32;
+      border: 1px solid #2e7d32;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    button:hover:not(:disabled) {
+      background: #276b2b;
+      border-color: #276b2b;
     }
 
     button:disabled {
@@ -205,6 +216,9 @@
 
     function exportTodos() {
       const lines = todos.map(todo => todo.text);
+
+      lines.push("");
+      lines.push("只要不失去你的崇高，整个世界都会为你敞开");
 
       const blob = new Blob([lines.join("\n")], { type: "text/plain" });
       const link = document.createElement("a");
